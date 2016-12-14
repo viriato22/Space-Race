@@ -23,7 +23,7 @@ bool ModulePlayer::Start()
 	// Car properties ----------------------------------------
 	car.chassis_size.Set(3, 1, 4);
 	car.chassis_offset.Set(0, 1.5, 0);
-	car.mass = 0.0f;
+	car.mass = 20000.0f;
 	car.suspensionStiffness = 150.88f;
 	car.suspensionCompression = 08.83f;
 	car.suspensionDamping = 08.88f;
@@ -166,9 +166,9 @@ update_status ModulePlayer::Update(float dt)
 	float trans[16];
 	vehicle->GetTransform(trans);
 	vec3 pos(trans[12], trans[13], trans[14]);
+	vec3 dir(trans[8], -0.5f, trans[10]);
 	App->camera->LookAt(pos);
-
-	pos.z -= 20;
+	pos -= dir * 10;
 	App->camera->Position = pos;
 
 	return UPDATE_CONTINUE;
