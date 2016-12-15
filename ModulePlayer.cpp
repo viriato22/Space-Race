@@ -31,7 +31,7 @@ bool ModulePlayer::Start()
 	car.frictionSlip = 500.5;
 	car.maxSuspensionForce = 60000.0f;
 
-	// Wheel properties ---------------------------------------
+	// Wheel properties --------------------------------------- //Change it into thrusters
 	/*float connection_height = 1.2f;
 	float wheel_radius = 0.6f;
 	float wheel_width = 0.5f;
@@ -162,7 +162,6 @@ update_status ModulePlayer::Update(float dt)
 	char title[80];
 	sprintf_s(title, "%.1f Km/h", vehicle->GetKmh());
 	App->window->SetTitle(title);
-
 	float trans[16];
 	vehicle->GetTransform(trans);
 	vec3 pos(trans[12], trans[13], trans[14]);
