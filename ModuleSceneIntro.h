@@ -41,4 +41,10 @@ public:
 
 	PhysMotor3D* left_wheel;
 	PhysMotor3D* right_wheel;
+
+private:
+	p2List<Cylinder> Cylinders;
+	p2List<Sphere> Spheres;
+
+	void CreateTorus(vec3 pos);
 };
