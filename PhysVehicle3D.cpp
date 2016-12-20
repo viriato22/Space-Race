@@ -10,86 +10,108 @@ VehicleInfo::~VehicleInfo()
 }
 
 // ----------------------------------------------------------------------------
-PhysVehicle3D::PhysVehicle3D(btRigidBody* body, btRaycastVehicle* vehicle, const VehicleInfo& info) : PhysBody3D(body), vehicle(vehicle), info(info)
+PhysVehicle3D::PhysVehicle3D(btRigidBody* body, const VehicleInfo& info) : PhysBody3D(body), body(body), info(info), currentSpeedKmHour(0)
 {
+	forward = right = up = { 0,0,0 };
 }
 
 // ----------------------------------------------------------------------------
 PhysVehicle3D::~PhysVehicle3D()
 {
-	delete vehicle;
 }
 
 // ----------------------------------------------------------------------------
-void PhysVehicle3D::Render()
+void PhysVehicle3D::Update(bool render)
 {
-	Cylinder wheel;
+	float v_matrix[16];
+	this->GetTransform(v_matrix);
 
-	wheel.color = Blue;
+	forward = { v_matrix[8], v_matrix[9], v_matrix[10] };
+	forward.normalize();
 
-	for(int i = 0; i < vehicle->getNumWheels(); ++i)
+	right = forward.cross({ 0,1,0 });
+	right.normalize();
+
+	up = forward.cross({ -1,0,0 });
+	up.normalize();
+
+	currentSpeedKmHour = btScalar(3.6) * body->getLinearVelocity().length();
+
+	if (forward.dot(body->getLinearVelocity()) < btScalar(0.))
 	{
-		wheel.radius = info.wheels[0].radius;
-		wheel.height = info.wheels[0].width;
-
-		vehicle->updateWheelTransform(i);
-		vehicle->getWheelInfo(i).m_worldTransform.getOpenGLMatrix(&wheel.transform);
-
-		wheel.Render();
+		currentSpeedKmHour *= btScalar(-1.);
 	}
+	
 
-	Cube chassis(info.chassis_size.x, info.chassis_size.y, info.chassis_size.z);
-	vehicle->getChassisWorldTransform().getOpenGLMatrix(&chassis.transform);
-	btQuaternion q = vehicle->getChassisWorldTransform().getRotation();
-	btVector3 offset(info.chassis_offset.x, info.chassis_offset.y, info.chassis_offset.z);
-	offset = offset.rotate(q.getAxis(), q.getAngle());
-
-	chassis.transform.M[12] += offset.getX();
-	chassis.transform.M[13] += offset.getY();
-	chassis.transform.M[14] += offset.getZ();
-
-
-	chassis.Render();
-}
-
-// ----------------------------------------------------------------------------
-void PhysVehicle3D::ApplyEngineForce(float force)
-{
-	for(int i = 0; i < vehicle->getNumWheels(); ++i)
+	if (render)
 	{
-		if(info.wheels[i].drive == true)
-		{
-			vehicle->applyEngineForce(force, i);
-		}
+		Cube chassis(info.chassis_size.x, info.chassis_size.y, info.chassis_size.z);
+		body->getWorldTransform().getOpenGLMatrix(&chassis.transform);
+		btQuaternion q = body->getWorldTransform().getRotation();
+		btVector3 offset(info.chassis_offset.x, info.chassis_offset.y, info.chassis_offset.z);
+		offset = offset.rotate(q.getAxis(), q.getAngle());
+
+		chassis.transform.M[12] += offset.getX();
+		chassis.transform.M[13] += offset.getY();
+		chassis.transform.M[14] += offset.getZ();
+
+
+		chassis.Render();
 	}
 }
 
 // ----------------------------------------------------------------------------
-void PhysVehicle3D::Brake(float force)
+void PhysVehicle3D::applyForwardImpulse(float force)
 {
-	for(int i = 0; i < vehicle->getNumWheels(); ++i)
+	if (force != 0)
+		body->applyCentralForce(forward * (force*info.mass / (fabs(currentSpeedKmHour) + 1)));
+
+	else
 	{
-		if(info.wheels[i].brake == true)
-		{
-			vehicle->setBrake(force, i);
-		}
+		btVector3 velocity = body->getLinearVelocity();
+		btVector3 projection = (velocity.dot(forward) / forward.dot(forward)) * forward;
+		body->setLinearVelocity(velocity - projection / 50);
 	}
+}
+
+// ----------------------------------------------------------------------------
+void PhysVehicle3D::applyLateralImpulse(float force)
+{
+	if (force != 0)
+		body->applyCentralForce(right * (force*info.mass / (fabs(currentSpeedKmHour) + 1)));
+
+	else
+	{
+		btVector3 velocity = body->getLinearVelocity();
+		btVector3 projection = (velocity.dot(right) / right.dot(right)) * right;
+		body->setLinearVelocity(velocity - projection /10);
+	}
+
+}
+
+// ----------------------------------------------------------------------------
+void PhysVehicle3D::applyUpwardImpulse(float force)
+{
+	if (force != 0)
+		body->applyCentralForce(up * (-force*info.mass / (fabs(currentSpeedKmHour) + 1)));
+
+	else
+	{
+		btVector3 velocity = body->getLinearVelocity();
+		btVector3 projection = (velocity.dot(up) / up.dot(up)) * up;
+		body->setLinearVelocity(velocity - projection / 10);
+	}
+
 }
 
 // ----------------------------------------------------------------------------
 void PhysVehicle3D::Turn(float degrees)
 {
-	for(int i = 0; i < vehicle->getNumWheels(); ++i)
-	{
-		if(info.wheels[i].steering == true)
-		{
-			vehicle->setSteeringValue(degrees, i);
-		}
-	}
+	//TBD
 }
 
 // ----------------------------------------------------------------------------
 float PhysVehicle3D::GetKmh() const
 {
-	return vehicle->getCurrentSpeedKmHour();
+	return currentSpeedKmHour;
 }
