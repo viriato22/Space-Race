@@ -26,4 +26,10 @@ public:
 	float f_acceleration;
 	float l_acceleration;
 	float u_acceleration;
+
+	//TIMER
+private:
+	bool finish;
+	Timer time;
+	float record;
 };

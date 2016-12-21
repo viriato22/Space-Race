@@ -26,6 +26,8 @@ bool ModulePlayer::Start()
 	car.mass = 20000.0f;
 	car.linear_dampening = 0.5f;
 
+	time.Start();
+
 	vehicle = App->physics->AddVehicle(car);
 	vehicle->SetPos(0, 50, 0);
 	
@@ -114,7 +116,7 @@ update_status ModulePlayer::Update(float dt)
 	vehicle->Turn(turn);
 
 	char title[80];
-	sprintf_s(title, "%.1f Km/h", vehicle->GetKmh());
+	sprintf_s(title, "%.1f Km/h, Time: %.1f / Record:%.1f ", vehicle->GetKmh(), (float)time.Read() / 1000.0f, record);
 	App->window->SetTitle(title);
 	float trans[16];
 	vehicle->GetTransform(trans);
@@ -126,6 +128,4 @@ update_status ModulePlayer::Update(float dt)
 
 	return UPDATE_CONTINUE;
 }
-
-
 
