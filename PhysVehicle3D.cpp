@@ -80,8 +80,8 @@ void PhysVehicle3D::applyForwardImpulse(float force)
 	if (force != 0)
 	{
 		body->applyCentralForce(forward * (force*info.mass / (fabs(projection.length()) + 1)));
-		if (projection.length() < 5.0f)
-			body->applyCentralForce(forward * (force* 2 *info.mass / (fabs(projection.length()) + 1)));
+		/*if (projection.length() < 5.0f)
+			body->applyCentralForce(forward * (force* 2 *info.mass / (fabs(projection.length()) + 1)));*/
 	}
 
 	else
