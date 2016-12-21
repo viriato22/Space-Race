@@ -58,7 +58,6 @@ bool ModulePhysics3D::Start()
 	// Big plane as ground
 	{
 		btCollisionShape* colShape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
-
 		btDefaultMotionState* myMotionState = new btDefaultMotionState();
 		btRigidBody::btRigidBodyConstructionInfo rbInfo(0.0f, myMotionState, colShape);
 
@@ -298,6 +297,7 @@ PhysVehicle3D* ModulePhysics3D::AddVehicle(const VehicleInfo& info)
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(info.mass, myMotionState, comShape, localInertia);
 
 	btRigidBody* body = new btRigidBody(rbInfo);
+	body->setActivationState(0);
 	body->setContactProcessingThreshold(BT_LARGE_FLOAT);
 	body->setActivationState(DISABLE_DEACTIVATION);
 
@@ -309,6 +309,50 @@ PhysVehicle3D* ModulePhysics3D::AddVehicle(const VehicleInfo& info)
 	vehicles.add(pvehicle);
 
 	return pvehicle;
+}
+
+PhysBody3D * ModulePhysics3D::AddTorus(btVector3& pos, float inner_radius, float outer_radius, float subdivisions)
+{
+	btVector3 forward(0.0f, 0.0f, 1.0f);
+	btVector3 side((outer_radius + pos.getX()), pos.getY(), pos.getZ());
+
+	double gap = sqrt(2.0*inner_radius*inner_radius
+		- 2.0*inner_radius*inner_radius*cos((2.0*SIMD_PI) / subdivisions));
+	btCylinderShapeZ * shape = new btCylinderShapeZ(btVector3(btScalar(inner_radius),
+		btScalar(inner_radius),
+		btScalar((SIMD_PI / subdivisions) + 0.5*gap)));
+
+	btTransform t;
+	btCompoundShape * torus_shape = new btCompoundShape();
+
+	for (int x = 0; x < (int)subdivisions; x++)
+	{
+		btScalar angle = btScalar((x*2.0*SIMD_PI) / subdivisions);
+		btVector3 position = side.rotate(forward, angle);
+		btQuaternion q(forward, angle);
+		t.setIdentity();
+		t.setOrigin(position);
+		t.setRotation(q);
+		torus_shape->addChildShape(t, shape);
+	}
+	shapes.add(shape);
+	shapes.add(torus_shape);
+	
+	btVector3 localInertia(0, 0, 0);
+	btTransform startTransform;
+	startTransform.setIdentity();
+
+	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
+	btRigidBody::btRigidBodyConstructionInfo rbInfo(0, myMotionState, torus_shape, localInertia);
+
+	btRigidBody* body = new btRigidBody(rbInfo);
+	PhysBody3D* pbody = new PhysBody3D(body);
+	body->setUserPointer(pbody);
+	world->addRigidBody(body);
+	bodies.add(pbody);
+
+
+	return pbody;
 }
 
 // ---------------------------------------------------------

@@ -80,7 +80,7 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 }
 
 void ModuleSceneIntro::CreateTorus(vec3 pos) {
-	Cylinder torus[12];
+	/*Cylinder torus[12];
 
 	for (int aux = 0; aux < 12; aux++) {
 		torus[aux].color = Red;
@@ -139,7 +139,9 @@ void ModuleSceneIntro::CreateTorus(vec3 pos) {
 		}
 		App->physics->AddBody(torus[aux], 100000);
 		Cylinders.add(torus[aux]);
-	}
+	}*/
+	btVector3 position(pos.x, pos.y, pos.z);
+	App->physics->AddTorus(position, 0.15, 1.0);
 }
 
 void ModuleSceneIntro::AsteroidField() {
