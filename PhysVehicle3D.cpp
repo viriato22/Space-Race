@@ -13,6 +13,7 @@ VehicleInfo::~VehicleInfo()
 PhysVehicle3D::PhysVehicle3D(btRigidBody* body, const VehicleInfo& info) : PhysBody3D(body), body(body), info(info), currentSpeedKmHour(0)
 {
 	forward = right = up = { 0,0,0 };
+	body->setDamping(0,0.5);
 }
 
 // ----------------------------------------------------------------------------
