@@ -3,6 +3,7 @@
 #include "PhysBody3D.h"
 #include "glmath.h"
 #include "Bullet\include\LinearMath\btVector3.h"
+
 struct PhysBody3D;
 
 struct VehicleInfo
@@ -38,5 +39,6 @@ private:
 	btVector3 forward;
 	btVector3 right;
 	btVector3 up;
+	btScalar lateral_angle;
 
 };

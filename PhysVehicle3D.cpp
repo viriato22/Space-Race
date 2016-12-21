@@ -1,6 +1,7 @@
 #include "PhysVehicle3D.h"
 #include "Primitive.h"
 #include "Bullet/include/btBulletDynamicsCommon.h"
+#include "Globals.h"
 
 // ----------------------------------------------------------------------------
 VehicleInfo::~VehicleInfo()
@@ -10,7 +11,7 @@ VehicleInfo::~VehicleInfo()
 }
 
 // ----------------------------------------------------------------------------
-PhysVehicle3D::PhysVehicle3D(btRigidBody* body, const VehicleInfo& info) : PhysBody3D(body), body(body), info(info), currentSpeedKmHour(0)
+PhysVehicle3D::PhysVehicle3D(btRigidBody* body, const VehicleInfo& info) : PhysBody3D(body), body(body), info(info), currentSpeedKmHour(0), lateral_angle(0)
 {
 	forward = right = up = { 0,0,0 };
 	body->setDamping(0,0.5);
@@ -43,20 +44,29 @@ void PhysVehicle3D::Update(bool render)
 		currentSpeedKmHour *= btScalar(-1.);
 	}
 	
+	btQuaternion q = body->getWorldTransform().getRotation();
+	
+	if (lateral_angle == 0 && q.getAngle() != 0)
+	{
+		btQuaternion rotationStep(forward, 2 * DEGTORAD);
+		body->getWorldTransform().setRotation(q * rotationStep);
+	}
 
 	if (render)
 	{
 		Cube chassis(info.chassis_size.x, info.chassis_size.y, info.chassis_size.z);
 		body->getWorldTransform().getOpenGLMatrix(&chassis.transform);
-		btQuaternion q = body->getWorldTransform().getRotation();
+		//btQuaternion q = body->getWorldTransform().getRotation();
 		btVector3 offset(info.chassis_offset.x, info.chassis_offset.y, info.chassis_offset.z);
 		offset = offset.rotate(q.getAxis(), q.getAngle());
+	
 
 		chassis.transform.M[12] += offset.getX();
 		chassis.transform.M[13] += offset.getY();
 		chassis.transform.M[14] += offset.getZ();
 
-
+		btQuaternion z;
+		z > q;
 		chassis.Render();
 	}
 }
@@ -83,15 +93,51 @@ void PhysVehicle3D::applyLateralImpulse(float force)
 {
 	btVector3 velocity = body->getLinearVelocity();
 	btVector3 projection = (velocity.dot(right) / right.dot(right)) * right;
+	btQuaternion rotationStep(forward, 2 * DEGTORAD);
+	btScalar maxangle = 10 * DEGTORAD;
+	btQuaternion q = body->getWorldTransform().getRotation();
+	btScalar angle = q.getAngle();
 
 	if (force != 0)
 	{
 		body->applyCentralForce(right * (force*info.mass / (fabs(currentSpeedKmHour) + 1)));
 		if (projection.length() < 5.0f)
 			body->applyCentralForce(forward * (force * 2 * info.mass / (fabs(currentSpeedKmHour) + 1)));
+
+		if (force > 0)
+		{
+			btQuaternion q = body->getWorldTransform().getRotation();
+			if (angle < maxangle)
+			{
+				body->getWorldTransform().setRotation(q * rotationStep);
+				lateral_angle += 2;
+			}
+		}
+		else
+		{
+			btQuaternion q = body->getWorldTransform().getRotation();
+			if (angle < maxangle)
+			{
+				body->getWorldTransform().setRotation(q * rotationStep.inverse());
+				lateral_angle -= 2;
+			}
+		}
 	}
 	else
-		body->setLinearVelocity(velocity - projection /10);
+	{
+		body->setLinearVelocity(velocity - projection / 10);
+		btQuaternion q = body->getWorldTransform().getRotation();
+		if (lateral_angle > 0)
+		{
+			body->getWorldTransform().setRotation(q * rotationStep.inverse());
+			lateral_angle -= 2;
+		}
+		else if (lateral_angle < 0)
+		{
+			body->getWorldTransform().setRotation(q * rotationStep);
+			lateral_angle += 2;
+		}
+	}
 
 }
 
