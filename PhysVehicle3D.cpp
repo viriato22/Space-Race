@@ -64,44 +64,51 @@ void PhysVehicle3D::Update(bool render)
 // ----------------------------------------------------------------------------
 void PhysVehicle3D::applyForwardImpulse(float force)
 {
+	btVector3 velocity = body->getLinearVelocity();
+	btVector3 projection = (velocity.dot(forward) / forward.dot(forward)) * forward;
+
 	if (force != 0)
+	{
 		body->applyCentralForce(forward * (force*info.mass / (fabs(currentSpeedKmHour) + 1)));
+		if (projection.length() < 5.0f)
+			body->applyCentralForce(forward * (force* 2 *info.mass / (fabs(currentSpeedKmHour) + 1)));
+	}
 
 	else
-	{
-		btVector3 velocity = body->getLinearVelocity();
-		btVector3 projection = (velocity.dot(forward) / forward.dot(forward)) * forward;
 		body->setLinearVelocity(velocity - projection / 50);
-	}
 }
 
 // ----------------------------------------------------------------------------
 void PhysVehicle3D::applyLateralImpulse(float force)
 {
-	if (force != 0)
-		body->applyCentralForce(right * (force*info.mass / (fabs(currentSpeedKmHour) + 1)));
+	btVector3 velocity = body->getLinearVelocity();
+	btVector3 projection = (velocity.dot(right) / right.dot(right)) * right;
 
-	else
+	if (force != 0)
 	{
-		btVector3 velocity = body->getLinearVelocity();
-		btVector3 projection = (velocity.dot(right) / right.dot(right)) * right;
-		body->setLinearVelocity(velocity - projection /10);
+		body->applyCentralForce(right * (force*info.mass / (fabs(currentSpeedKmHour) + 1)));
+		if (projection.length() < 5.0f)
+			body->applyCentralForce(forward * (force * 2 * info.mass / (fabs(currentSpeedKmHour) + 1)));
 	}
+	else
+		body->setLinearVelocity(velocity - projection /10);
 
 }
 
 // ----------------------------------------------------------------------------
 void PhysVehicle3D::applyUpwardImpulse(float force)
 {
-	if (force != 0)
-		body->applyCentralForce(up * (-force*info.mass / (fabs(currentSpeedKmHour) + 1)));
+	btVector3 velocity = body->getLinearVelocity();
+	btVector3 projection = (velocity.dot(up) / up.dot(up)) * up;
 
-	else
+	if (force != 0)
 	{
-		btVector3 velocity = body->getLinearVelocity();
-		btVector3 projection = (velocity.dot(up) / up.dot(up)) * up;
-		body->setLinearVelocity(velocity - projection / 10);
+		body->applyCentralForce(up * (-force*info.mass / (fabs(currentSpeedKmHour) + 1)));
+		if (projection.length() < 5.0f)
+			body->applyCentralForce(forward * (force * 2 * info.mass / (fabs(currentSpeedKmHour) + 1)));
 	}
+	else
+		body->setLinearVelocity(velocity - projection / 10);
 
 }
 
