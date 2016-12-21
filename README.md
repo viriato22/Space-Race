@@ -7,5 +7,5 @@ S -> decelerate
 D -> turn right
 A -> turn left
 
-R -> go up
-F -> go down
+R / Left Shift   -> go up
+F / Left Control -> go down
