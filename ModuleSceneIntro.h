@@ -44,7 +44,8 @@ public:
 
 private:
 	p2List<Cylinder> Cylinders;
-	p2List<Sphere> Spheres;
+	p2List<Sphere> Asteroids;
 
 	void CreateTorus(vec3 pos);
+	void AsteroidField();
 };

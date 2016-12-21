@@ -4,6 +4,9 @@
 #include "Primitive.h"
 #include "PhysBody3D.h"
 
+#include <stdlib.h>
+#include <time.h>
+
 #define RADIUS 44
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
@@ -19,11 +22,33 @@ bool ModuleSceneIntro::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 
+	srand(time(NULL));
+
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 
-	vec3 pos = { 0,50,100 };
+	vec3 pos = { 0, 50, 100 };
 	CreateTorus(pos);
+
+	pos = { 0, 60, 500 };
+	CreateTorus(pos);
+
+	pos = { 20, 80, 1000 };
+	CreateTorus(pos);
+
+	pos = { -10, 100, 1500 };
+	CreateTorus(pos);
+
+	pos = { 40, 50, 2000 };
+	CreateTorus(pos);
+
+	pos = { 50, 90, 2500 };
+	CreateTorus(pos);
+
+	pos = { 30, 70, 3000 };
+	CreateTorus(pos);
+
+	//AsteroidField();
 
 	return ret;
 }
@@ -39,9 +64,13 @@ bool ModuleSceneIntro::CleanUp()
 // Update
 update_status ModuleSceneIntro::Update(float dt)
 {
-	Plane p(0, 1, 0, 0);
+	/*Plane p(0, 1, 0, 0);
 	p.axis = true;
-	p.Render();
+	p.Render();*/
+
+	for (p2List_item<Cylinder>* aux = Cylinders.getFirst(); aux != nullptr; aux = aux->next) {
+		aux->data.Render();
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -110,5 +139,27 @@ void ModuleSceneIntro::CreateTorus(vec3 pos) {
 		}
 		App->physics->AddBody(torus[aux], 100000);
 		Cylinders.add(torus[aux]);
+	}
+}
+
+void ModuleSceneIntro::AsteroidField() {
+	Sphere spheres[20];
+	int radius;
+
+	for (int aux = 0; aux < 20; aux++) {
+		radius = rand() % 40 + 20;
+		spheres[aux].radius = radius;
+
+		switch (aux) {
+		case 0:
+			spheres[aux].SetPos(6, 70, 200);
+			break;
+		case 1:
+			spheres[aux].SetPos(-20, -60, 300);
+			break;
+		}
+
+		App->physics->AddBody(spheres[aux], 100000);
+		Asteroids.add(spheres[aux]);
 	}
 }

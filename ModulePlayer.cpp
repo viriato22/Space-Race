@@ -27,7 +27,7 @@ bool ModulePlayer::Start()
 	car.linear_dampening = 0.5f;
 
 	vehicle = App->physics->AddVehicle(car);
-	vehicle->SetPos(0, 12, 0);
+	vehicle->SetPos(0, 50, 0);
 	
 	return true;
 }
@@ -65,12 +65,12 @@ update_status ModulePlayer::Update(float dt)
 		l_acceleration += MAX_ACCELERATION;
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_REPEAT)
 	{
 		u_acceleration += MAX_ACCELERATION;
 	}
 	
-	if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_REPEAT)
 	{
 		u_acceleration -= MAX_ACCELERATION;
 	}
@@ -101,6 +101,11 @@ update_status ModulePlayer::Update(float dt)
 		vehicle->GetTransform(matrix);
 		vehicle->SetPos(matrix[0], matrix[1], matrix[2] + 20);
 		delete[] matrix;
+	}
+
+	//DANI-> BARREL ROLL
+	if (App->input->GetKey(SDL_SCANCODE_Y) == KEY_REPEAT) {
+		vehicle->body->applyImpulse(btVector3(0, 70, 0), btVector3(10, 0, 0));
 	}
 
 	vehicle->applyForwardImpulse(f_acceleration);
