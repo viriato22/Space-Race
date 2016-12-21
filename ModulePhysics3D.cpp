@@ -318,7 +318,7 @@ PhysBody3D * ModulePhysics3D::AddTorus(btVector3& pos, float inner_radius, float
 
 	double gap = sqrt(2.0*inner_radius*inner_radius
 		- 2.0*inner_radius*inner_radius*cos((2.0*SIMD_PI) / subdivisions));
-	btCylinderShapeZ * shape = new btCylinderShapeZ(btVector3(btScalar(inner_radius),
+	btCylinderShapeX * shape = new btCylinderShapeX(btVector3(btScalar(inner_radius),
 		btScalar(inner_radius),
 		btScalar((SIMD_PI / subdivisions) + 0.5*gap)));
 
