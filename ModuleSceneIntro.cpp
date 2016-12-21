@@ -29,7 +29,7 @@ bool ModuleSceneIntro::Start()
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 
-	vec3 pos = { 0, 50, 100 };
+	/*vec3 pos = { 0, 50, 100 };
 	CreateTorus(pos);
 
 	pos = { 0, 60, 500 };
@@ -48,7 +48,9 @@ bool ModuleSceneIntro::Start()
 	CreateTorus(pos);
 
 	pos = { 30, 70, 3000 };
-	CreateTorus(pos);
+	CreateTorus(pos);*/
+
+	CreateCircuit();
 
 	//AsteroidField();
 
@@ -166,4 +168,36 @@ void ModuleSceneIntro::AsteroidField() {
 		App->physics->AddBody(spheres[aux], 100000);
 		Asteroids.add(spheres[aux]);
 	}
+}
+
+void ModuleSceneIntro::CreateCircuit() {
+	vec3 pos;
+	float distance = 500;
+	Cylinder sens[10];
+
+	pos = { 0, 50, 100 };
+	CreateTorus(pos);
+	sens[0].height = 2;
+	sens[0].radius = 44;
+	sens[0].SetPos(pos.x, pos.y, pos.z);
+	Sensors.add(App->physics->AddBody(sens[0], 0));
+
+	for (int aux = 0; aux < 9; aux++) {
+		pos.x = rand() % 30;
+		pos.y = rand() % 60 + 60;
+		pos.z = distance;
+
+		CreateTorus(pos);
+
+		sens[aux + 1].height = 2;
+		sens[aux + 1].radius = 44;
+		sens[aux + 1].SetPos(pos.x, pos.y, pos.z);
+		Sensors.add(App->physics->AddBody(sens[aux + 1], 0));
+
+		distance += 500;
+	}
+
+	/*for (p2List_item<PhysBody3D*>* current = Sensors.getFirst(); current->data != nullptr; current = current->next) {
+		current->data->collision_listeners.add(this);
+	}*/
 }

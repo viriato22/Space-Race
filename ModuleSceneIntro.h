@@ -48,4 +48,7 @@ private:
 
 	void CreateTorus(vec3 pos);
 	void AsteroidField();
+	void CreateCircuit();
+
+	p2List<PhysBody3D*> Sensors;
 };
