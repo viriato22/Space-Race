@@ -5,7 +5,7 @@
 
 struct PhysVehicle3D;
 
-#define MAX_ACCELERATION 1000.0f  //DEFAULT 800.0f
+#define MAX_ACCELERATION 10000.0f  //DEFAULT 800.0f
 #define TURN_DEGREES 15.0f * DEGTORAD
 #define BACK_ACCELERATION 1000.0f //DEFAULT 800.0f
 
@@ -26,4 +26,10 @@ public:
 	float f_acceleration;
 	float l_acceleration;
 	float u_acceleration;
+
+	//TIMER
+private:
+	bool finish;
+	Timer time;
+	float record;
 };
