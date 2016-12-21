@@ -141,7 +141,7 @@ void ModuleSceneIntro::CreateTorus(vec3 pos) {
 		Cylinders.add(torus[aux]);
 	}*/
 	btVector3 position(pos.x, pos.y, pos.z);
-	App->physics->AddTorus(position, 0.15, 1.0);
+	App->physics->AddTorus(position, 5, 20, 30);
 }
 
 void ModuleSceneIntro::AsteroidField() {
