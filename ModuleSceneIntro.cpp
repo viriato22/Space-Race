@@ -182,6 +182,7 @@ void ModuleSceneIntro::CreateCircuit() {
 	sens[0].SetPos(pos.x, pos.y, pos.z);
 	sens[0].SetRotation(90, { 0, 1, 0 });
 	Sensors.add(App->physics->AddBody(sens[0], 0));
+	Sensors.getLast()->data->SetSensor(true);
 
 	for (int aux = 0; aux < 9; aux++) {
 		pos.x = rand() % 30;
@@ -195,6 +196,7 @@ void ModuleSceneIntro::CreateCircuit() {
 		sens[aux + 1].SetPos(pos.x, pos.y, pos.z);
 		sens[aux + 1].SetRotation(90, { 0, 1, 0 });
 		Sensors.add(App->physics->AddBody(sens[aux + 1], 0));
+		Sensors.getLast()->data->SetSensor(true);
 
 		distance += 500;
 	}
