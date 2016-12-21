@@ -67,12 +67,14 @@ update_status ModulePlayer::Update(float dt)
 		l_acceleration += MAX_ACCELERATION;
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_REPEAT ||
+		App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 	{
 		u_acceleration += MAX_ACCELERATION;
 	}
 	
-	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_REPEAT ||
+		App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT)
 	{
 		u_acceleration -= MAX_ACCELERATION;
 	}
