@@ -101,7 +101,7 @@ update_status ModulePlayer::Update(float dt)
 		float* matrix = new float [30];
 		
 		vehicle->GetTransform(matrix);
-		vehicle->SetPos(matrix[0], matrix[1], matrix[2] + 20);
+		vehicle->SetPos(matrix[12], matrix[13], matrix[14] + 20);
 		delete[] matrix;
 	}
 
@@ -122,9 +122,9 @@ update_status ModulePlayer::Update(float dt)
 	vehicle->GetTransform(trans);
 	vec3 pos(trans[12], trans[13], trans[14]);
 	vec3 dir(trans[8], -0.5f, trans[10]);
+	vec3 campos = pos - dir * 10;
+	App->camera->Position = campos;
 	App->camera->LookAt(pos);
-	pos -= dir * 10;
-	App->camera->Position = pos;
 
 	return UPDATE_CONTINUE;
 }

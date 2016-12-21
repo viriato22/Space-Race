@@ -79,9 +79,9 @@ void PhysVehicle3D::applyForwardImpulse(float force)
 
 	if (force != 0)
 	{
-		body->applyCentralForce(forward * (force*info.mass / (fabs(currentSpeedKmHour) + 1)));
+		body->applyCentralForce(forward * (force*info.mass / (fabs(projection.length()) + 1)));
 		if (projection.length() < 5.0f)
-			body->applyCentralForce(forward * (force* 2 *info.mass / (fabs(currentSpeedKmHour) + 1)));
+			body->applyCentralForce(forward * (force* 2 *info.mass / (fabs(projection.length()) + 1)));
 	}
 
 	else
@@ -100,9 +100,9 @@ void PhysVehicle3D::applyLateralImpulse(float force)
 
 	if (force != 0)
 	{
-		body->applyCentralImpulse(right * (force*info.mass / (fabs(currentSpeedKmHour) + 1)));
-		if (projection.length() < 5.0f)
-			body->applyCentralImpulse(forward * (force * 2 * info.mass / (fabs(currentSpeedKmHour) + 1)));
+		body->applyCentralForce(right * (force * info.mass / (fabs(projection.length()) + 1)));
+		//if (projection.length() < 5.0f)
+			//body->applyCentralForce(right * (force * info.mass / (fabs(projection.length()) + 1)));
 
 		if (force > 0)
 		{
@@ -149,9 +149,9 @@ void PhysVehicle3D::applyUpwardImpulse(float force)
 
 	if (force != 0)
 	{
-		body->applyCentralImpulse(up * (-force*info.mass / (fabs(currentSpeedKmHour) + 1)));
-		if (projection.length() < 5.0f)
-			body->applyCentralImpulse(forward * (force * 2 * info.mass / (fabs(currentSpeedKmHour) + 1)));
+		body->applyCentralForce(up * (-force*info.mass / (fabs(projection.length()) + 1)));
+		//if (projection.length() < 5.0f)
+			//body->applyCentralImpulse(up * (force * 2 * info.mass / (fabs(currentSpeedKmHour) + 1)));
 	}
 	else
 		body->setLinearVelocity(velocity - projection / 10);
