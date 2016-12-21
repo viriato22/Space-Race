@@ -27,6 +27,7 @@ public:
 	void applyForwardImpulse(float force);
 	void applyLateralImpulse(float force);
 	void applyUpwardImpulse(float force);
+	void doBarrelRoll(bool right);
 	void Turn(float degrees);
 	float GetKmh() const;
 public:
@@ -40,5 +41,7 @@ private:
 	btVector3 right;
 	btVector3 up;
 	btScalar lateral_angle;
+	bool barrel_left;
+	bool barrel_right;
 
 };

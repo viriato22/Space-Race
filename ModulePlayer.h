@@ -32,4 +32,6 @@ private:
 	bool finish;
 	Timer time;
 	float record;
+	float time_press_a;
+	float time_press_d;
 };

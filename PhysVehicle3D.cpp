@@ -11,7 +11,8 @@ VehicleInfo::~VehicleInfo()
 }
 
 // ----------------------------------------------------------------------------
-PhysVehicle3D::PhysVehicle3D(btRigidBody* body, const VehicleInfo& info) : PhysBody3D(body), body(body), info(info), currentSpeedKmHour(0), lateral_angle(0)
+PhysVehicle3D::PhysVehicle3D(btRigidBody* body, const VehicleInfo& info) : PhysBody3D(body), body(body), info(info), currentSpeedKmHour(0), lateral_angle(0),
+barrel_left(false), barrel_right(false)
 {
 	forward = right = up = { 0,0,0 };
 	body->setDamping(0,0.5);
@@ -46,10 +47,27 @@ void PhysVehicle3D::Update(bool render)
 	
 	btQuaternion q = body->getWorldTransform().getRotation();
 	
-	if (lateral_angle == 0 && q.getAngle() != 0)
+	/*if (lateral_angle == 0 && q.getAngle() != 0)
 	{
 		btQuaternion rotationStep(forward, 2 * DEGTORAD);
 		body->getWorldTransform().setRotation(q * rotationStep);
+	}*/
+	if (barrel_right || barrel_left)
+	{
+		if (q.getAngle() == 0)
+		{
+			barrel_right = barrel_left = false;
+		}
+		else
+		{
+			btQuaternion rotationStep(forward, 10 * DEGTORAD);
+			if (barrel_right)
+				body->getWorldTransform().setRotation(q * rotationStep);
+			else
+				body->getWorldTransform().setRotation(q * rotationStep.inverse());
+		}
+		
+		
 	}
 
 	if (render)
@@ -155,6 +173,25 @@ void PhysVehicle3D::applyUpwardImpulse(float force)
 	}
 	else
 		body->setLinearVelocity(velocity - projection / 10);
+
+}
+
+void PhysVehicle3D::doBarrelRoll(bool right)
+{
+	btQuaternion rotationStep(forward, 5 * DEGTORAD);
+	btQuaternion q = body->getWorldTransform().getRotation();
+	
+	lateral_angle = 0;
+	if (right)
+	{
+		barrel_right = true;
+		body->getWorldTransform().setRotation(q * rotationStep);
+	}
+	else
+	{
+		barrel_left = true;
+		body->getWorldTransform().setRotation(q * rotationStep.inverse());
+	}
 
 }
 

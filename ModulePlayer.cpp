@@ -30,7 +30,8 @@ bool ModulePlayer::Start()
 
 	vehicle = App->physics->AddVehicle(car);
 	vehicle->SetPos(0, 50, 0);
-	
+	time_press_a = time_press_d = -1;
+
 	return true;
 }
 
@@ -57,9 +58,25 @@ update_status ModulePlayer::Update(float dt)
 		f_acceleration -= BACK_ACCELERATION;
 	}
 	
+	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_DOWN)
+	{
+		float time_this = (float)time.Read();
+		if ((time_this - time_press_a)/1000 <= 1.0f)
+			vehicle->doBarrelRoll(false);
+		time_press_a = time_this;
+	}
+
 	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
 	{
 		l_acceleration -= MAX_ACCELERATION;
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN)
+	{
+		float time_this = (float)time.Read();
+		if ((time_this - time_press_d)/1000 <= 1.0f)
+			vehicle->doBarrelRoll(true);
+		time_press_d = time_this;
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
