@@ -27,26 +27,7 @@ bool ModuleSceneIntro::Start()
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 
-	vec3 pos = { 0, 50, 100 };
-	CreateTorus(pos);
-
-	pos = { 0, 60, 500 };
-	CreateTorus(pos);
-
-	pos = { 20, 80, 1000 };
-	CreateTorus(pos);
-
-	pos = { -10, 100, 1500 };
-	CreateTorus(pos);
-
-	pos = { 40, 50, 2000 };
-	CreateTorus(pos);
-
-	pos = { 50, 90, 2500 };
-	CreateTorus(pos);
-
-	pos = { 30, 70, 3000 };
-	CreateTorus(pos);
+	CreateCircuit();
 
 	//AsteroidField();
 
@@ -161,5 +142,20 @@ void ModuleSceneIntro::AsteroidField() {
 
 		App->physics->AddBody(spheres[aux], 100000);
 		Asteroids.add(spheres[aux]);
+	}
+}
+
+void ModuleSceneIntro::CreateCircuit() {
+	vec3 pos;
+	float distance = 500;
+	
+	for (int aux = 0; aux < 20; aux++) {
+		pos.x = rand() % 30;
+		pos.y = rand() % 60 + 60;
+		pos.z = distance;
+
+		CreateTorus(pos);
+
+		distance += 500;
 	}
 }

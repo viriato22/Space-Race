@@ -48,4 +48,5 @@ private:
 
 	void CreateTorus(vec3 pos);
 	void AsteroidField();
+	void CreateCircuit();
 };
