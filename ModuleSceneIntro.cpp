@@ -24,6 +24,8 @@ bool ModuleSceneIntro::Start()
 
 	srand(time(NULL));
 
+	App->audio->PlayMusic("F-Zero_-_Mute_City.ogg");
+
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 
@@ -80,7 +82,7 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 }
 
 void ModuleSceneIntro::CreateTorus(vec3 pos) {
-	/*Cylinder torus[12];
+	Cylinder torus[12];
 
 	for (int aux = 0; aux < 12; aux++) {
 		torus[aux].color = Red;
@@ -139,9 +141,9 @@ void ModuleSceneIntro::CreateTorus(vec3 pos) {
 		}
 		App->physics->AddBody(torus[aux], 100000);
 		Cylinders.add(torus[aux]);
-	}*/
-	btVector3 position(pos.x, pos.y, pos.z);
-	App->physics->AddTorus(position, 5, 20, 30);
+	}
+	/*btVector3 position(pos.x, pos.y, pos.z);
+	App->physics->AddTorus(position, 5, 20, 30);*/
 }
 
 void ModuleSceneIntro::AsteroidField() {
